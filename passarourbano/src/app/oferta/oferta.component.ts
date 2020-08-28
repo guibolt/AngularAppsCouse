@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OfertasService } from 'app/ofertas.services';
 import { Oferta } from 'app/shared/oferta.model';
 import { Observable } from 'rxjs/Observable';
 
+import { Subscription} from 'rxjs/Subscription'
+
 import 'rxjs/Rx'
 import { Observer } from 'rxjs/Rx';
+
 @Component({
   selector: 'app-oferta',
   templateUrl: './oferta.component.html',
@@ -14,10 +17,13 @@ import { Observer } from 'rxjs/Rx';
     OfertasService
   ]
 })
-export class OfertaComponent implements OnInit {
+export class OfertaComponent implements OnInit,OnDestroy {
+
+  private tempoObservableSubscripton : Subscription
+  private meuObservableTesteSubscription : Subscription
+
 
   public ofertaEscolhida : Oferta
-
   public lstImagens : any[]
 
   private idOferta: string
@@ -25,6 +31,11 @@ export class OfertaComponent implements OnInit {
     private route : ActivatedRoute,
     private ofertasService: OfertasService
    ) {}
+
+  ngOnDestroy(): void {
+    this.tempoObservableSubscripton.unsubscribe()
+    this.meuObservableTesteSubscription.unsubscribe()
+  }
 
   async ngOnInit() {
     // Pegando utilziando o subscribe 
@@ -36,18 +47,9 @@ export class OfertaComponent implements OnInit {
     await this.ofertasService.getOfertaPorId(this.idOferta).then((resp)=> this.ofertaEscolhida = resp)
     this.setaListaImagens()
 
-    // Observavel na rota
-    // this.route.params.subscribe((p : any) =>{
-    //   console.log('param', p)
-    // },(e) =>{
-    //   console.log('teve um erro', e)
-    // },()=>{
-    //   console.log('completo')
-    // })
-
     //Observavel de incremento numerico
-    // let tempo = Observable.interval(2000)
-    // tempo.subscribe(((intervalo : Number) => console.log(intervalo)))
+    let tempo = Observable.interval(2000)
+   this.tempoObservableSubscripton =  tempo.subscribe(((intervalo : Number) => console.log(intervalo)))
 
 
         //Observavel busca a ação
@@ -58,7 +60,7 @@ export class OfertaComponent implements OnInit {
       observer.error('erro ao continuar')
     })
       // Observador esperando o resultado e tratando
-    meuObservableTeste.subscribe((result: any) => console.log(result),(erro) => console.log(erro),() => console.log('fechou'))
+   this.meuObservableTesteSubscription = meuObservableTeste.subscribe((result: any) => console.log(result),(erro) => console.log(erro),() => console.log('fechou'))
 
   }
  

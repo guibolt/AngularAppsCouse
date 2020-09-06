@@ -14,7 +14,7 @@ export class RestaurantesComponent implements OnInit {
 
   constructor( private ofertasService: OfertasService) { }
   public restauranteOfertas : Oferta[]
-
+  public dataTeste : any = new Date()
 
   async ngOnInit() {
     await this.ofertasService.getOfertasPorCategoria('restaurante').then((resp)=> this.restauranteOfertas = resp)

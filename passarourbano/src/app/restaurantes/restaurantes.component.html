@@ -22,15 +22,11 @@
       </div>
 
       <div class="row">
-        <h5>{{dataTeste | date: 'dd/MM/yyyy H/mm/ss' }}.</h5>
-      </div>
-
-      <div class="row">
         <p>{{restaurante.anunciante}}</p>
       </div>
 
       <div class="row">
-        <p>{{restaurante.valor}}</p>
+        <p>{{restaurante.valor  | currency : 'BRL': true}}</p>
       </div>
 
       <div class="row">

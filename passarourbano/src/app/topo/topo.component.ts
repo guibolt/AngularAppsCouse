@@ -20,6 +20,7 @@ export class TopoComponent implements OnInit {
   public ofertas: Observable<Oferta[]>
   public lstOfertas : Oferta[]
   private subjectPesquisa: Subject<string> = new Subject<string>()
+  public valor : string = ''
 
   constructor(private ofertasService : OfertasService) { }
 
@@ -28,9 +29,9 @@ export class TopoComponent implements OnInit {
       debounceTime(1000), // executa a ação depois do tempo passado
       distinctUntilChanged(), //se o termo for diferente do termo anterior, ele executa uma nova requisição
       switchMap((termo: string) => {
-        if (termo.trim() == '') {
+        if (termo.trim() == '') 
            return Observable.of<Oferta[]>([])
-        }
+        
         return this.ofertasService.pesquisaOfertas(termo)
        }),
        catchError ((erro) => {
@@ -42,8 +43,13 @@ export class TopoComponent implements OnInit {
       this.lstOfertas = ofertas
     )
   }
-  public Pesquisar(termoBusca: string): void {
+  public Pesquisar(termoBusca: string): void {  
     console.log('key up caracter:', termoBusca)
     this.subjectPesquisa.next(termoBusca)
+  }
+  public limpaPesquisa() : void{
+    this.subjectPesquisa.next('')
+    this.valor = ''
+     
   }
 }

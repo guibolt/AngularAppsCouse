@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { OfertasService } from 'app/ofertas.services';
 import { Oferta } from 'app/shared/oferta.model';
 
@@ -29,12 +29,13 @@ export class OfertaComponent implements OnInit,OnDestroy {
 
   async ngOnInit() {
     // Pegando utilziando o subscribe 
-   //  this.route.params.subscribe((p: any) => this.idOferta = p)
+     //this.route.params.subscribe((p: any) => this.idOferta = p)
 
     //Pegando valor pelo snapshop da rota
-    this.idOferta = this.route.snapshot.params['id']
+    this.route.params.subscribe((params: Params) => {
 
-    await this.ofertasService.getOfertaPorId(this.idOferta).then((resp)=> this.ofertaEscolhida = resp)
+       this.ofertasService.getOfertaPorId(params.id).then((resp) => this.ofertaEscolhida = resp);
+    })
     this.setaListaImagens()
   }
  

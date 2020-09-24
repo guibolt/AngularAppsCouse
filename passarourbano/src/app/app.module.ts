@@ -18,7 +18,10 @@ import { OndeFicaComponent } from './oferta/onde-fica/onde-fica.component';
 
 
 //pipe
-import {DescricaoReduzida } from './util/descricao-reduzida.pipe'
+import {DescricaoReduzida } from './util/descricao-reduzida.pipe';
+import { OrdemCompraComponent } from './ordem-compra/ordem-compra.component';
+import { OrdemCompraSucessoComponent } from './ordem-compra-sucesso/ordem-compra-sucesso.component'
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -31,13 +34,15 @@ import {DescricaoReduzida } from './util/descricao-reduzida.pipe'
     OfertaComponent,
     ComoUsarComponent,
     OndeFicaComponent,
-    DescricaoReduzida
-    
+    DescricaoReduzida,
+    OrdemCompraComponent,
+    OrdemCompraSucessoComponent,
   ],
   imports: [
     BrowserModule,
     HttpModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
+    FormsModule
   ],
   providers: [ { provide: LOCALE_ID, useValue: 'pt-BR'}],
   bootstrap: [AppComponent]

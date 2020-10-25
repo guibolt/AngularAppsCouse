@@ -1,100 +1,57 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { OrdemCompraService } from 'app/ordem-compra.services';
-import { Pedido } from 'app/shared/pedido.model';
+import { toArray } from 'rxjs/operators';
+import { Pedido } from '../shared/pedido.model'
 
 @Component({
   selector: 'app-ordem-compra',
   templateUrl: './ordem-compra.component.html',
   styleUrls: ['./ordem-compra.component.css'],
-  providers:[
-    OrdemCompraService
-  ]
+  providers: [OrdemCompraService  ]
 })
 export class OrdemCompraComponent implements OnInit {
-  public idPedidoCompra : number
 
-  public endereco: string = ''
-  public numero : string =''
-  public complemento : string = ''
-  public formaPagamento: string = ''
+  public idPedido : number
 
-  // controle de validação dos campos
+  public formulario : FormGroup = new FormGroup({
+    'endereco': new FormControl(null,[Validators.required,Validators.minLength(3),Validators.maxLength(120)]),
+    'numero' : new FormControl(null,[Validators.required,Validators.minLength(1),Validators.maxLength(20)]),
+    'complemento': new FormControl(null),
+    'formaPagamento': new FormControl(null,[Validators.required]),
+  })
 
-  public enderecoValido: boolean
-  public numeroValido: boolean
-  public complementoValido: boolean
-  public formaPagamentoValido: boolean
-
-  // estados primitivos dos campos (pristine)
-  public endPrimitivo: boolean = true
-  public numPrimitivo: boolean = true
-  public compPrimitivo: boolean = true
-  public formPrimitivo: boolean = true
-
-  //controlar botao e compra 
-  public formEstado :string = 'disabled'
-
-
-  constructor(private ordemCompraService : OrdemCompraService) { }
+  constructor(private ordemCompraService: OrdemCompraService) { }
 
   ngOnInit() {
     
   }
-    public atualizaEndereco(endereco: string) : void {
-      this.endereco = endereco
-      this.endPrimitivo = false
 
-      if(this.endereco.length > 3)
-           this.enderecoValido = true
-      else
-          this.enderecoValido = false
-        this.habilitaForma()
+  public confirmarCompra(): void {
+  
+    if(this.formulario.status === 'INVALID')
+        this.marcarComoInvalido()
+    else {
+        let novoPedido : Pedido = new Pedido(
+          this.formulario.value.endereco,
+          this.formulario.value.numero,
+          this.formulario.value.complemento,
+          this.formulario.value.formaPagamento
+        )
+      
+        this.ordemCompraService.efetivarCompras(novoPedido)
+        .subscribe((pedidoId: number) =>
+          this.idPedido = pedidoId
+        )
+
     }
-    public atualizaNumero(numero: string) : void {
-      this.numero = numero
-      this.numPrimitivo = false
+  }
 
-      if(this.numero.length > 0)
-          this.numeroValido = true
-      else
-          this.numeroValido = false
-          this.habilitaForma()
-    }
-    public atualizaComplemento(complemento: string) : void {
-      this.complemento = complemento
-      this.compPrimitivo = false
 
-      if(this.complemento.length > 0)
-          this.complementoValido = true
-      else
-          this.complementoValido = false
-          this.habilitaForma()
-    }
-    public atualizaFormaPagamento(formaPagamento: string) : void {
-      this.formaPagamento = formaPagamento
-      this.formPrimitivo = false
-
-      if(this.formaPagamento.length > 0)
-          this.formaPagamentoValido = true
-     else
-        this.formaPagamentoValido = false
-
-        this.habilitaForma()
-    }
-
-    public habilitaForma(): void {
-      if(this.enderecoValido && this.numeroValido && this.formaPagamentoValido)
-          this.formEstado = ''
-      else
-      this.formEstado ='disabled'
-    }
-
-    public confirmarCompra(): void {
-        let novoPedido : Pedido = new Pedido(this.endereco,this.numero,this.complemento,this.formaPagamento)
-
-      this.ordemCompraService.efetivarCompras(novoPedido)
-      .subscribe((resp: number) =>
-       this.idPedidoCompra = resp
-    )
-    }
+  private marcarComoInvalido(){
+    this.formulario.get('endereco').markAsTouched()
+      this.formulario.get('numero').markAsTouched()
+      this.formulario.get('formaPagamento').markAsTouched()
+      this.formulario.get('complemento').markAsTouched()
+  }
 }

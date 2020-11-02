@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CarrinhoService } from 'app/carrinho.service';
 import { OrdemCompraService } from 'app/ordem-compra.services';
-import { toArray } from 'rxjs/operators';
+import { ItemCarrinho } from 'app/shared/item-carrinho.model';
 import { Pedido } from '../shared/pedido.model'
 
 @Component({
@@ -13,6 +14,8 @@ import { Pedido } from '../shared/pedido.model'
 export class OrdemCompraComponent implements OnInit {
 
   public idPedido : number
+  public itensCarrinho : ItemCarrinho[] = []
+  public totalCarrinho : number
 
   public formulario : FormGroup = new FormGroup({
     'endereco': new FormControl(null,[Validators.required,Validators.minLength(3),Validators.maxLength(120)]),
@@ -21,27 +24,39 @@ export class OrdemCompraComponent implements OnInit {
     'formaPagamento': new FormControl(null,[Validators.required]),
   })
 
-  constructor(private ordemCompraService: OrdemCompraService) { }
+  constructor(private ordemCompraService: OrdemCompraService, public carrinhoService : CarrinhoService) { }
 
   ngOnInit() {
+    this.itensCarrinho = this.carrinhoService.retornaItens()
     
+    this.itensCarrinho.forEach((item)=> this.totalCarrinho =+ (item.quantidade * item.valor)
+)
   }
 
   public confirmarCompra(): void {
-  
+    if(this.carrinhoService.retornaItens().length === 0){
+      alert('selecione itens e compre!')
+      return
+    }
+
     if(this.formulario.status === 'INVALID')
         this.marcarComoInvalido()
     else {
+
         let novoPedido : Pedido = new Pedido(
           this.formulario.value.endereco,
           this.formulario.value.numero,
           this.formulario.value.complemento,
-          this.formulario.value.formaPagamento
+          this.formulario.value.formaPagamento,
+          this.carrinhoService.retornaItens()
         )
       
         this.ordemCompraService.efetivarCompras(novoPedido)
-        .subscribe((pedidoId: number) =>
+        .subscribe((pedidoId: number) => {
           this.idPedido = pedidoId
+          this.carrinhoService.limparCarrinho()
+        }
+        
         )
 
     }

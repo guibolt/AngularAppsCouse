@@ -4,6 +4,7 @@ import { NgModule,LOCALE_ID } from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
+import { CarrinhoService } from './carrinho.service';
 
 import { AppComponent } from './app.component';
 import { TopoComponent } from './topo/topo.component';
@@ -21,6 +22,7 @@ import { OndeFicaComponent } from './oferta/onde-fica/onde-fica.component';
 import {DescricaoReduzida } from './util/descricao-reduzida.pipe';
 import { OrdemCompraComponent } from './ordem-compra/ordem-compra.component';
 import { OrdemCompraSucessoComponent } from './ordem-compra-sucesso/ordem-compra-sucesso.component'
+
 
 
 @NgModule({
@@ -44,7 +46,7 @@ import { OrdemCompraSucessoComponent } from './ordem-compra-sucesso/ordem-compra
     RouterModule.forRoot(routes),
     ReactiveFormsModule
   ],
-  providers: [ { provide: LOCALE_ID, useValue: 'pt-BR'}],
+  providers: [CarrinhoService, { provide: LOCALE_ID, useValue: 'pt-BR'}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
